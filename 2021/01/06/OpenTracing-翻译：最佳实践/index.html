@@ -273,11 +273,11 @@
 
 <h5 id="存储当前的-SpanContext"><a href="#存储当前的-SpanContext" class="headerlink" title="存储当前的 SpanContext"></a>存储当前的 SpanContext</h5><p>用户必须能够在处理请求时，访问当前的 SpanContext ，以便在 Span 上设置自定义的 tag 、记录事件，等等需求。为了做到这一点，您必须决定如何使得 Span 可供用户使用，以下是两个常见的例子：</p>
 <ol>
-<li>请求 context ：如果您的框架有一个可以存储任意值的请求 context ，那么可以将 SpanContext 存储在这里。如果您的框架有可以更改请求处理方式的过滤器，这也是可以的。例如，如果您有一个称为 ctx 的 context ，可以使用以下过滤器：</li>
+<li>请求 context ：如果您的框架有一个可以存储任意值的请求 context ，那么可以将 SpanContext 存储在这里。如果您的框架有可以更改请求处理方式的过滤器，并且您有一个称为 ctx 的 context ，可以使用以下代码：</li>
 </ol>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">def filter(request):</span><br><span class="line">    span &#x3D; ...</span><br><span class="line">    with (ctx.active_span &#x3D; span):</span><br><span class="line">        process_request(request)</span><br><span class="line">    span.finish()</span><br></pre></td></tr></table></figure>
 
-<p>现在，处理任何请求的时候，如果用户访问 <code>ctx.active_span</code> ，它们将拿到该请求的 Span 。</p>
+<p>现在，处理任何请求的时候，如果用户访问 <code>ctx.active_span</code> ，将拿到该请求的 Span 。</p>
 <ol start="2">
 <li>您可能没有可用的请求 context ，那么可以改为创建一个 map ，存储 { 请求 : span } 的映射。例如：</li>
 </ol>
