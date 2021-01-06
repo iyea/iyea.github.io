@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="google-site-verification" content="iHug-vHtQcv460XTpubJQX1Bv3Vg2PM_A8nn7D_O5J4" />
+  <meta name="author" content="zchengsite, 1451426471@qq.com" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  
+  <title>OpenTracing 翻译：语义规范 | iyea</title>
+
+  
+
+  <!-- Raleway-Font -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+  <!-- hexo site css -->
+  
+<link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/iconfont/iconfont.css">
+<link rel="stylesheet" href="/css/github-markdown.css">
+<link rel="stylesheet" href="/css/highlight.css">
+
+
+  <!-- jquery3.3.1 -->
+  <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+
+  <!-- fancybox -->
+  <link href="https://cdn.bootcss.com/fancybox/3.5.2/jquery.fancybox.min.css" rel="stylesheet">
+  <script async src="https://cdn.bootcss.com/fancybox/3.5.2/jquery.fancybox.min.js"></script>
+  
+<script src="/js/fancybox.js"></script>
+
+
+  
+
+<meta name="generator" content="Hexo 5.2.0"><link rel="alternate" href="/atom.xml" title="iyea" type="application/atom+xml">
+</head>
+
+
+  <body>
+    <div id="app">
+      <div class="header">
+  <div class="avatar">
+    <a href="/">
+      <!-- 头像取消懒加载，添加no-lazy -->
+      
+        <img src="/images/head.gif" alt="">
+      
+    </a>
+    <div class="nickname"><a href="/">iyea</a></div>
+  </div>
+  <div class="navbar">
+    <ul>
+      
+        <li class="nav-item" data-path="/">
+          <a href="/">主页</a>
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          <a href="/archives/">归档</a>
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          <a href="/categories/">分类</a>
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          <a href="/about/">关于</a>
+        </li>
+      
+    </ul>
+  </div>
+</div>
+
+
+<script src="/js/activeNav.js"></script>
+
+
+
+      <div class="flex-container">
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">OpenTracing 翻译：语义规范</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime" title="Update time"></i>
+          2021-01-06
+        </span>
+        
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="Categories"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA/" title="计算机">
+                    <b>#</b> 计算机
+                  </a>
+                </span>
+                
+              </span>
+          
+      </div>
+      <div class="markdown-body">
+        <h3 id="OpenTracing-语义规范"><a href="#OpenTracing-语义规范" class="headerlink" title="OpenTracing 语义规范"></a>OpenTracing 语义规范</h3><h5 id="版本"><a href="#版本" class="headerlink" title="版本"></a>版本</h5><p>1.1</p>
+<h5 id="文档总览"><a href="#文档总览" class="headerlink" title="文档总览"></a>文档总览</h5><p>这是正式的 OpenTracing 语义规范，由于 OpenTracing 必须跨多语言工作，因此本文档应当尽量避免使用特定于语言的概念——所有语言都有『接口』的概念，它封装了一组功能。</p>
+<h5 id="版本政策"><a href="#版本政策" class="headerlink" title="版本政策"></a>版本政策</h5><p>OpenTracing 规范使用 Major.Minor 版本号，但是没有 .Patch 。对规范进行向后不兼容的更改时，主版本号会递增，次要版本会不断地更改，例如引入新的标准 tags 、 log 字段、 SpanContext 指向的类型，等等。</p>
+<h5 id="OpenTracing-数据模型"><a href="#OpenTracing-数据模型" class="headerlink" title="OpenTracing 数据模型"></a>OpenTracing 数据模型</h5><p>Trace 在 OpenTracing 中由 Span 被隐式定义。特别地， Trace 可以被认为是 Span 的有向无环图（ DAG ）， Span 是顶点， Span 之间的指向是有向边。</p>
+<p>例如，以下是 8 个 Span 组成的 Trace ：</p>
+<p><img src="https://iyea.github.io/images/13.png"></p>
+<p>有时，使用时间轴的方式来可视化更加容易，如图：</p>
+<p><img src="https://iyea.github.io/images/14.png"></p>
+<p>每一个 Span 都封装以下状态：</p>
+<ul>
+<li>操作名称</li>
+<li>开始时间戳</li>
+<li>结束时间戳</li>
+<li>标签： k : v pair 的集合</li>
+<li>Log ： k : v pair 的集合，每个 Log 本身就是带时间戳</li>
+<li>SpanContext （见下文）</li>
+<li>指向：指向零个或者多个 Span</li>
+</ul>
+<p>每一个 SpanContext 都封装以下状态：</p>
+<ul>
+<li>跨进程粒度的、区分每一个 Span 的 OpenTracing 实现依赖的状态（例如， TraceID 和 SpanID ）</li>
+<li>Baggage Items ： k : v pair 的集合，用于携带其他必要信息</li>
+</ul>
+<h5 id="Span-之间的指向"><a href="#Span-之间的指向" class="headerlink" title="Span 之间的指向"></a>Span 之间的指向</h5><p>Span 可以引用因果相关的零个或者多个其他 Span 。 OpenTracing 当前定义了两种指向： ChildOf 和 FollowsFrom ，两种参考类型都直接为子 Span 和父 Span 之间的因果关系建模，将来 OpenTracing 可能还会支持具有非因果关系的 Span 指向，例如：一起批处理的 Span ，卡在同一队列中的 Span 。</p>
+<p>ChildOf 指向： Span 可以是父 Span 的 ChildOf 。在 ChildOf 指向中，父 Span 在某种成都上取决于子 Span ，以下所有内容构成 ChildOf 关系：</p>
+<p><img src="https://iyea.github.io/images/15.png"></p>
+<p>FollowsFrom 指向：一些父 Span 不完全依赖子 Span 的结果，在这些情况下，我们仅仅说子 Span 和父 Span 在逻辑上是跟随关系。有许多不同的 FollowsFrom 指向的子类别，在 OpenTracing 的未来版本中，它们可能会更加正式地区分。</p>
+<p>以下是对于子 Span 跟随父 Span 的例子：</p>
+<p><img src="https://iyea.github.io/images/16.png"></p>
+<h5 id="OpenTracing-API"><a href="#OpenTracing-API" class="headerlink" title="OpenTracing API"></a>OpenTracing API</h5><p>OpenTracing 规范中包含三种关键且互相关联的类型： Tracer 、 Span 、 SpanContext 。下面我们介绍与每种类型相关的方法。</p>
+<h6 id="Tracer"><a href="#Tracer" class="headerlink" title="Tracer"></a>Tracer</h6><p>Tracer 接口创建 Span ，在网络传输中 Inject 和 Extract Span 。形式化地， Tracer 具有以下功能：</p>
+<ul>
+<li><p>创建一个 Span ，需要的参数有：</p>
+<ul>
+<li><p>操作名称，可读字符串，简洁的表示 Span 代表的工作（例如， RPC 方法名称、函数名称）。操作名称应当是泛化的字符串，用于统计 Span ，例如 <code>get_user</code> 就要好于 <code>get_user/114514</code> 。</p>
+<p>例如，以下是获得账户信息的 Span 可选的备选名称：</p>
+<ul>
+<li><code>get</code> ，太泛化，不行</li>
+<li><code>get_account/792</code> ，太具体，不行</li>
+<li><code>get_account</code> ，好，其中， <code>account_id=792</code> 可以作为这个 span 的一个 tag （ tag 可以用来标注一个特定的 span 携带的特定的信息）</li>
+</ul>
+</li>
+</ul>
+<p>可选的参数有：</p>
+<ul>
+<li>零个或者多个对相关 SpanContext 的指向</li>
+<li>开始时间戳，如果没有此参数，采取当前的 walltime 作为缺省值</li>
+<li>零个或者多个 tags</li>
+</ul>
+<p>返回值：已经 start 但是还未 finish 的 Span 实例</p>
+</li>
+<li><p>Inject SpanContext 到 Carrier ，需要的参数有：</p>
+<ul>
+<li>SpanContext 实例</li>
+<li>格式描述符（通常是字符串常量），告诉 Tracer 如何在 Carrier 参数中编码 SpanContext</li>
+<li>Carrier ，其类型由格式决定， Tracer 将根据格式，编码 SpanContext 到 Carrier 参数中</li>
+</ul>
+</li>
+<li><p>Extract SpanContext 从 Carrier ，需要的参数有：</p>
+<ul>
+<li>格式描述符（通常是字符串常量），告诉 Tracer 如何在 Carrier 参数中解码 SpanContext</li>
+<li>Carrier ，其类型由格式决定， Tracer 将根据格式，从 Carrier 参数中解码 SpanContext</li>
+</ul>
+<p>返回值： SpanContext 实例，通常被用作新 Span 的指向</p>
+</li>
+</ul>
+<p>注意，所有的 Tracer 都必须支持如下 Inject / Extract 的格式：</p>
+<ul>
+<li>Text map ，即 string : string 的映射</li>
+<li>HTTP Headers ，即适用于（例如满足 RPC 7230 标准） HTTP Headers 的 string : string 的映射</li>
+<li>Binary</li>
+</ul>
+<h6 id="Span"><a href="#Span" class="headerlink" title="Span"></a>Span</h6><p>Span 的方法：</p>
+<ul>
+<li><p>Retrieve Span 的 SpanContext</p>
+<ul>
+<li>不应该有参数</li>
+</ul>
+<p>返回值：给定 Span 的 SpanContext ，即使 Span finish 之后，也可以使用该函数</p>
+</li>
+<li><p>Overwrite 操作名称，参数有：</p>
+<ul>
+<li>新的操作名称，将取代 start Span 时传递的操作名称</li>
+</ul>
+</li>
+<li><p>Finish Span</p>
+<p>可选的参数有：</p>
+<ul>
+<li>时间戳，表示 Span finish 的事件，缺省值是当前 walltime</li>
+</ul>
+<p>除了 retrieve Span 的 SpanContext 以外，在 Span finish 之后，不能调用 Span 的任何方法。</p>
+</li>
+<li><p>设置 Span tag ，需要的参数有：</p>
+<ul>
+<li>tag key ，必须是字符串类型</li>
+<li>tag value ，必须是字符串、 bool 、整数类型</li>
+</ul>
+<p>注意， OpenTracing project 记录了一些具有规定语义的『标准 tag 』</p>
+</li>
+<li><p>打印结构化的 Log ，需要的参数有：</p>
+<ul>
+<li>一个或者多个 k : v pair ，其中 k 必须是字符串，并且值可以是任意类型</li>
+</ul>
+<p>可选的参数有：</p>
+<ul>
+<li>时间戳，表示这条日志代表的事件发生的事件，它必须介于 Span 的 start 和 finish 时间之间</li>
+</ul>
+<p>注意， OpenTracing project 记录了一些具有规定语义的『标准 log key 』</p>
+</li>
+<li><p>设置 Baggage Item</p>
+<p>Baggage Item 是附加到某个 Span 、这个 Span 的 SpanContxt 、与这个 Span 相关联的其他 Spans 上的 k : v pair 。 Baggage Item 会随着 Trace 在网络中传播。</p>
+<p>Baggage Item 可以携带应用程序的任意数据，成本也较高——会增加大量的 CPU 和网络开销。</p>
+<p>需要的参数：</p>
+<ul>
+<li>baggage key ，字符串</li>
+<li>baggage value ，字符串</li>
+</ul>
+</li>
+<li><p>获取 Baggage Item ，需要的参数：</p>
+<ul>
+<li>baggage key ，字符串</li>
+</ul>
+<p>返回值：与 baggage key 对应的 baggage value ，或者找不到相应的 baggage value 的提示。</p>
+</li>
+</ul>
+<h6 id="SpanContext"><a href="#SpanContext" class="headerlink" title="SpanContext"></a>SpanContext</h6><p>SpanContext 不仅仅是 OpenTracing 层的功能，更是一个『概念』—— SpanContext 对 OpenTracing 的实现至关重要。</p>
+<p>大多数 OpenTracing 用户，仅仅在 start Span 或者 Inject / Extract 传输协议的时候，才会获取 SpanContext 进行交互。</p>
+<p>在 OpenTracing 中，我们强调 SpanContext 是 immutable 的，以避免 Span 的 finish 和指向，等复杂的生命周期问题。</p>
+<ul>
+<li><p>遍历所有的 Baggage Items</p>
+<p>根据语言的不同，可以采取不同的方式实现，但是在语义上，给定 SpanContext ，调用方可以遍历所有 Baggage Items 。</p>
+</li>
+</ul>
+<h6 id="Noop-Tracer"><a href="#Noop-Tracer" class="headerlink" title="Noop Tracer"></a>Noop Tracer</h6><p>所有的 OpenTracing 语言的 API 必须提供某种 NoopTracer 实现，可以用 flag 控制 OpenTracing 是否开启，或者 Inject 一些无害的消息为了测试。</p>
+
+      </div>
+      
+    </div>
+    
+
+    
+      <div class="comments-container">
+        
+
+
+
+
+
+      </div>
+    
+  </div>
+
+
+      </div>
+
+      <div class="back-to-top hidden">
+  <a href="javascript: void(0)">
+    <i class="iconfont icon-chevronup"></i>
+  </a>
+</div>
+
+
+<script src="/js/backtotop.js"></script>
+
+
+
+      
+
+
+    </div>
+  </body>
+</html>

@@ -6,7 +6,7 @@
   <link href="https://iyea.github.io/atom.xml" rel="self"/>
   
   <link href="https://iyea.github.io/"/>
-  <updated>2021-01-06T15:35:29.226Z</updated>
+  <updated>2021-01-06T15:52:02.197Z</updated>
   <id>https://iyea.github.io/</id>
   
   <author>
@@ -15,6 +15,53 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>OpenTracing 翻译：语义规范</title>
+    <link href="https://iyea.github.io/2021/01/06/OpenTracing-%E7%BF%BB%E8%AF%91%EF%BC%9A%E8%AF%AD%E4%B9%89%E8%A7%84%E8%8C%83/"/>
+    <id>https://iyea.github.io/2021/01/06/OpenTracing-%E7%BF%BB%E8%AF%91%EF%BC%9A%E8%AF%AD%E4%B9%89%E8%A7%84%E8%8C%83/</id>
+    <published>2021-01-06T15:47:35.000Z</published>
+    <updated>2021-01-06T15:52:02.197Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h3 id=&quot;OpenTracing-语义规范&quot;&gt;&lt;a href=&quot;#OpenTracing-语义规范&quot; class=&quot;headerlink&quot; title=&quot;OpenTracing 语义规范&quot;&gt;&lt;/a&gt;OpenTracing 语义规范&lt;/h3&gt;&lt;h5 id=&quot;版本&quot;&gt;&lt;a</summary>
+        
+      
+    
+    
+    
+    <category term="计算机" scheme="https://iyea.github.io/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>OpenTracing 翻译：最佳实践</title>
+    <link href="https://iyea.github.io/2021/01/06/OpenTracing-%E7%BF%BB%E8%AF%91%EF%BC%9A%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/"/>
+    <id>https://iyea.github.io/2021/01/06/OpenTracing-%E7%BF%BB%E8%AF%91%EF%BC%9A%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/</id>
+    <published>2021-01-06T15:41:33.000Z</published>
+    <updated>2021-01-06T15:46:44.101Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h3 id=&quot;最佳实践&quot;&gt;&lt;a href=&quot;#最佳实践&quot; class=&quot;headerlink&quot; title=&quot;最佳实践&quot;&gt;&lt;/a&gt;最佳实践&lt;/h3&gt;&lt;p&gt;本页旨在说明开发人员使用 OpenTracing 对应用程序进行探测的常见用例。&lt;/p&gt;
+&lt;h5</summary>
+        
+      
+    
+    
+    
+    <category term="计算机" scheme="https://iyea.github.io/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA/"/>
+    
+    
+  </entry>
   
   <entry>
     <title>OpenTracing 翻译： Overview</title>

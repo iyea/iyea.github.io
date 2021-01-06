@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="google-site-verification" content="iHug-vHtQcv460XTpubJQX1Bv3Vg2PM_A8nn7D_O5J4" />
+  <meta name="author" content="zchengsite, 1451426471@qq.com" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  
+  <title>OpenTracing 翻译：最佳实践 | iyea</title>
+
+  
+
+  <!-- Raleway-Font -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+  <!-- hexo site css -->
+  
+<link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/iconfont/iconfont.css">
+<link rel="stylesheet" href="/css/github-markdown.css">
+<link rel="stylesheet" href="/css/highlight.css">
+
+
+  <!-- jquery3.3.1 -->
+  <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+
+  <!-- fancybox -->
+  <link href="https://cdn.bootcss.com/fancybox/3.5.2/jquery.fancybox.min.css" rel="stylesheet">
+  <script async src="https://cdn.bootcss.com/fancybox/3.5.2/jquery.fancybox.min.js"></script>
+  
+<script src="/js/fancybox.js"></script>
+
+
+  
+
+<meta name="generator" content="Hexo 5.2.0"><link rel="alternate" href="/atom.xml" title="iyea" type="application/atom+xml">
+</head>
+
+
+  <body>
+    <div id="app">
+      <div class="header">
+  <div class="avatar">
+    <a href="/">
+      <!-- 头像取消懒加载，添加no-lazy -->
+      
+        <img src="/images/head.gif" alt="">
+      
+    </a>
+    <div class="nickname"><a href="/">iyea</a></div>
+  </div>
+  <div class="navbar">
+    <ul>
+      
+        <li class="nav-item" data-path="/">
+          <a href="/">主页</a>
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          <a href="/archives/">归档</a>
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          <a href="/categories/">分类</a>
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          <a href="/about/">关于</a>
+        </li>
+      
+    </ul>
+  </div>
+</div>
+
+
+<script src="/js/activeNav.js"></script>
+
+
+
+      <div class="flex-container">
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">OpenTracing 翻译：最佳实践</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime" title="Update time"></i>
+          2021-01-06
+        </span>
+        
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="Categories"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA/" title="计算机">
+                    <b>#</b> 计算机
+                  </a>
+                </span>
+                
+              </span>
+          
+      </div>
+      <div class="markdown-body">
+        <h3 id="最佳实践"><a href="#最佳实践" class="headerlink" title="最佳实践"></a>最佳实践</h3><p>本页旨在说明开发人员使用 OpenTracing 对应用程序进行探测的常见用例。</p>
+<h5 id="退后一步，-OpenTracing-的目标是谁？"><a href="#退后一步，-OpenTracing-的目标是谁？" class="headerlink" title="退后一步， OpenTracing 的目标是谁？"></a>退后一步， OpenTracing 的目标是谁？</h5><p>OpenTracing 是一个轻薄的标准化层，位于应用程序、库和需要追踪的各个系统之间，如图：</p>
+<p><img src="https://iyea.github.io/images/6.png"></p>
+<h5 id="用例"><a href="#用例" class="headerlink" title="用例"></a>用例</h5><p>下表列出了 OpenTracing 用例以及详细描述：</p>
+<table>
+<thead>
+<tr>
+<th>用例</th>
+<th align="left">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>应用程序代码</td>
+<td align="left">开发人员可以使用 OpenTracing 描述流程上的因果关系，并在此过程中添加细粒度的 log 信息</td>
+</tr>
+<tr>
+<td>库代码</td>
+<td align="left">对收发请求进行中间控制的库，可以与 OpenTracing 集成。例如， Web 中间件可以使用 OpenTracing 创建 Span 来处理请求，或者 ORM 库可以使用 OpenTracing 描述更高级别的 ORM 语义，并且探测特定的 SQL 查询的执行效率。</td>
+</tr>
+<tr>
+<td>OSS 服务（对象存储）</td>
+<td align="left">除了嵌入式库以外，整个 OSS 服务都可以用 OpenTracing 集成。例如， HTTP LoadBalancer 可以使用 OpenTracing 来装饰请求；分布式 KV 存储可以使用 OpenTracing 来探知读取和写入性能。</td>
+</tr>
+<tr>
+<td>RPC/IPC 框架</td>
+<td align="left">负责跨进程通信的任何子系统，都可以使用 OpenTracing 来追踪，因为 OpenTracing 可以注入（ Inject ）各种格式和协议（例如 HTTP Headers ），并且从中提取（ Extract ）。</td>
+</tr>
+</tbody></table>
+<p>以上所有，都可以使用 OpenTracing 来描述和传播分布式追踪，而不需要了解底层的 OpenTracing 实现。</p>
+<h5 id="OpenTracing-优先事项"><a href="#OpenTracing-优先事项" class="headerlink" title="OpenTracing 优先事项"></a>OpenTracing 优先事项</h5><p>由于在 OpenTracing 的应用层（而不是实现层）有更多数量级的开发者和应用程序，所以 OpenTracing 应当优先考虑应用上的易用性。本文档的用例仅限于 OpenTracing API 的调用者。</p>
+<h5 id="启发用例"><a href="#启发用例" class="headerlink" title="启发用例"></a>启发用例</h5><p>以下讨论了 OpenTracing 生态系统中的一些常见用例。</p>
+<h6 id="追踪一个函数"><a href="#追踪一个函数" class="headerlink" title="追踪一个函数"></a>追踪一个函数</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">def top_level_function():</span><br><span class="line">    span1 &#x3D; tracer.start_span(&#39;top_level_function&#39;)</span><br><span class="line">    try:</span><br><span class="line">        # some logic...</span><br><span class="line">    finally:</span><br><span class="line">        span1.finish()</span><br></pre></td></tr></table></figure>
+
+<p>接下来，假设我们在 top_level_function 的 <code># some logic...</code> 中，需要调用 function2 ，为了将追踪 function2 的 span2 添加到当前的 trace 中，我们需要一种访问 span1 的方法，并且构造 span1 和 span2 的联系。现在我们假设已经有了一个辅助函数 <code>get_current_span</code> 可以拿到当前的 Span ：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">def function2():</span><br><span class="line">    span2 &#x3D; if get_current_span() then get_current_span().start_child(&#39;function2&#39;) else None</span><br><span class="line">    try:</span><br><span class="line">        # some logic...</span><br><span class="line">    finally:</span><br><span class="line">        if span2:</span><br><span class="line">            span2.finish()</span><br></pre></td></tr></table></figure>
+
+<p>这里我们假设：如果在 top level 函数里没有启动 trace （ <code>get_current_span</code> 可能返回 None ），则开发者可能不希望在 function2 内启动新的 trace 。</p>
+<p>这两个例子是 naive 的。通常，开发者不希望追踪代码污染业务，而是使用其他方式。例如 Python 的装饰器：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">@traced_function</span><br><span class="line">def top_level_function():</span><br><span class="line">    # some logic...</span><br></pre></td></tr></table></figure>
+
+<h6 id="追踪服务端"><a href="#追踪服务端" class="headerlink" title="追踪服务端"></a>追踪服务端</h6><p>当服务端需要追踪请求的执行时，通常需要执行以下步骤：</p>
+<ol>
+<li>尝试提取与嵌入请求中的 SpanContext （如果客户端启动追踪的话），如果找不到请求中的 SpanContext ，则启动一个新的 trace 。</li>
+<li>将新创建的 Span 存储在应用程序或者 RPC 框架的请求 context 中。</li>
+<li>最后，服务器在处理完请求后，使用 span.finish() 关闭 Span 。</li>
+</ol>
+<h6 id="从传入请求中提取-SpanContext"><a href="#从传入请求中提取-SpanContext" class="headerlink" title="从传入请求中提取 SpanContext"></a>从传入请求中提取 SpanContext</h6><p>假设我们有一个 HTTP Server ，并且 SpanContext 是通过 HTTP Header 从客户端传播的，并且该 HTTP Header 可以通过 requerst.headers 访问，那么，提取程序像如下这样：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">extracted_context &#x3D; tracer.extract(</span><br><span class="line">    format&#x3D;opentracing.HTTP_HEADER_FORMAT,</span><br><span class="line">    carrier&#x3D;request.headers)</span><br></pre></td></tr></table></figure>
+
+<p>在这里，我们使用 HTTP Header map 作为 Carrier （承载 SpanContext 的载体）， Tracer 需要知道读取哪些 Headers （并且过滤掉与 trace 无关的 Headers ），才能重建 Span 和 Baggage Items （ SpanContext 携带的、与 Span 无关的其他业务信息）。</p>
+<h6 id="从传入请求中继续追踪"><a href="#从传入请求中继续追踪" class="headerlink" title="从传入请求中继续追踪"></a>从传入请求中继续追踪</h6><p>如果 Tracer 在传入请求中找不到相关的 Header ，则上面的 <code>extracted_context</code> 为 None ，大概是因为客户端没有启动追踪。此时，服务端需要新建一个全新的 trace ：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">extracted_context &#x3D; tracer.extract(</span><br><span class="line">    format&#x3D;opentracing.HTTP_HEADER_FORMAT,</span><br><span class="line">    carrier&#x3D;request.headers)</span><br><span class="line">if extracted_context is None:</span><br><span class="line">    span &#x3D; tracer.start_span(operation_name&#x3D;operation)</span><br><span class="line">else:</span><br><span class="line">    span &#x3D; tracer.start_span(operation_name&#x3D;operation, child_of&#x3D;extracted_context)</span><br><span class="line">span.set_tag(&#39;http_method&#39;, request.method)</span><br><span class="line">span.set_tag(&#39;http.url&#39;, request,full_url)</span><br></pre></td></tr></table></figure>
+
+<p>其中， <code>set_tag</code> 调用可以在 Span 上面附加有关请求的其他信息。</p>
+<p>上面的 <code>operation_name</code> 指的是服务器要赋予给 Span 的名称，例如 HTTP 是 <code>/save_user/123</code> 的 POST 请求，那么 operation 可以设置为 <code>post:/set_user/</code> 。 OpenTracing 不会规定应用程序如何命名 Span 。</p>
+<h6 id="进程内请求上下文的传播"><a href="#进程内请求上下文的传播" class="headerlink" title="进程内请求上下文的传播"></a>进程内请求上下文的传播</h6><p>『请求上下文传播』是指应用程序的关联 context 和传入请求的能力，请求上下文传播为应用程序的所有模块提供了请求粒度的访问，例如校验用户的身份（需要以当前的请求作为参数校验）。它也可以用于传播当前的追踪 Span 。</p>
+<p>请求上下文传播的实现不在 OpenTracing API 的范围之内，但是值得一提的是，有两种常用的上下文传播技术：</p>
+<p>隐式传播， context 存储在特定平台的存储中，从而可以从应用程序的任何位置检索 context 。通常由 RPC 框架通过线程本地存储甚至全局变量之类的机制维护。缺点是会降低性能。</p>
+<p>显式传播，应用程序函数都带一个 context 参数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">func HandleHttp(w http.ResponseWriter, req *http.Request) &#123;</span><br><span class="line">    ctx :&#x3D; context.Background()</span><br><span class="line">    ...</span><br><span class="line">    BusinessFunction1(ctx, arg1, ...)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func BusinessFunction1(ctx context.Context, arg1...) &#123;</span><br><span class="line">    ...</span><br><span class="line">    BusinessFunction2(ctx, arg1, ...)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func BusinessFunction2(ctx context.Context, arg1...) &#123;</span><br><span class="line">    &#x2F;&#x2F; 可以直接在函数显式传递的 ctx 中拿到 Span</span><br><span class="line">    parentSpan :&#x3D; opentracing.SpanFromContext(ctx)</span><br><span class="line">    childSpan :&#x3D; opentracing.StartSpan(</span><br><span class="line">        &quot;...&quot;, opentracing.ChildOf(parentSpan.Context()), ...)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>显式传播的不利之处在于，它将基础架构的结构暴露在了业务代码中。</p>
+<h6 id="追踪客户端调用"><a href="#追踪客户端调用" class="headerlink" title="追踪客户端调用"></a>追踪客户端调用</h6><p>当应用程序充当 RPC 客户端时，应当在发出请求之前启动新的追踪 Span ，并且该 Span 与请求一起传播。以下例子表示了如何针对 HTTP 请求完成此操作：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">def traced_request(request, operation, http_client):</span><br><span class="line">    parent_span &#x3D; get_current_span()</span><br><span class="line"></span><br><span class="line">    # 创建新 Span</span><br><span class="line">    span &#x3D; tracer.start_span(</span><br><span class="line">        operation_name&#x3D;operation,</span><br><span class="line">        child_of&#x3D;parent_span.context,</span><br><span class="line">        tags&#x3D;&#123;&#39;http.url&#39;: request.full_url&#125;)</span><br><span class="line"></span><br><span class="line">    # 通过 http heaader 格式注入 Span 到 request.headers 中</span><br><span class="line">    tracer.inject(</span><br><span class="line">        span.context,</span><br><span class="line">        format&#x3D;opentracing.HTTP_HEADER_FORMAT,</span><br><span class="line">        carrier&#x3D;request.headers)</span><br><span class="line"></span><br><span class="line">    # 创建一个 callback ，结束 Span</span><br><span class="line">    def on_done(future):</span><br><span class="line">        if future.exception():</span><br><span class="line">            span.log(event&#x3D;&#39;rpc exception&#39;, payload&#x3D;exception)</span><br><span class="line">        span.set_tag(&#39;http.status_code&#39;, future.result().status_code)</span><br><span class="line">        span.finish()</span><br><span class="line"></span><br><span class="line">    # 开始真实地发请求</span><br><span class="line">    try:</span><br><span class="line">        future &#x3D; http_client.execute(request)</span><br><span class="line">        future.add_done_callback(on_done)</span><br><span class="line">        return future</span><br><span class="line">    except Exception e:</span><br><span class="line">        span.log(event&#x3D;&#39;general exception&#39;, payload&#x3D;e)</span><br><span class="line">        span.finish()</span><br><span class="line">        raise</span><br></pre></td></tr></table></figure>
+
+<p>注意：</p>
+<ul>
+<li><code>get_current_span</code> 函数不是 OpenTracing 标准的一部分，它旨在表达如何从隐式传播的 context 中拿到当前 Span 。</li>
+<li>我们假定 HTTP 是异步请求的，所以返回 future ，并且需要在 callback 中 finish Span 。</li>
+<li>如果 HTTP 异常，我们将异常记录到 Span 的 log 中。</li>
+<li>由于 HTTP 客户端可能在 future 返回之前引发异常，所以我们必须在所有情况下使用 try / catch 来 finish Span ，确保不会资源泄露。</li>
+</ul>
+<h6 id="使用-Baggage-Items"><a href="#使用-Baggage-Items" class="headerlink" title="使用 Baggage Items"></a>使用 Baggage Items</h6><p>上面的客户端和服务器例子，通过网络传播了 Span 和 Trace 。客户端也可以将一部分数据使用 Baggage Items 的方式，传递给服务器以及其他下游：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># 客户端</span><br><span class="line">span.context.set_baggage_item(&#39;auth-token&#39;, &#39;...&#39;)</span><br><span class="line">---</span><br><span class="line"># 服务器端</span><br><span class="line">token &#x3D; span.context.get_baggage_item(&#39;auth-token&#39;)</span><br></pre></td></tr></table></figure>
+
+<h6 id="事件-Log"><a href="#事件-Log" class="headerlink" title="事件 Log"></a>事件 Log</h6><p>我们已经在客户端的例子中使用过 log 。事件可以被 log 记录下来，而不是仅仅像 Span 那样记录一个起始和终止时间。例如： log 可以记录 cache 未命中事件：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">span &#x3D; get_current_span()</span><br><span class="line">span.log(event&#x3D;&#39;cache-miss&#39;)</span><br></pre></td></tr></table></figure>
+
+<p>Tracer 会自动记录事件发生的时间戳，而不像 Tag 那样对整个 Span 生效（ Tag 没有时间概念，只是标明一个 Span 的某个属性）。也可以将外部提供的时间戳与事件关联。</p>
+<h6 id="使用外部时间戳记录-Span"><a href="#使用外部时间戳记录-Span" class="headerlink" title="使用外部时间戳记录 Span"></a>使用外部时间戳记录 Span</h6><p>OpenTracing 提供了具有外部定义的时间戳的 Span 。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">explicit_span &#x3D; tracer.start_span(</span><br><span class="line">    operation_name&#x3D;external_format.operation,</span><br><span class="line">    start_time&#x3D;external_format.start</span><br><span class="line">    tags&#x3D;external_format.tags)</span><br><span class="line">explicit_span.finish(</span><br><span class="line">    finish_time&#x3D;external_format.finish,</span><br><span class="line">    bulk_logs&#x3D;map(..., external_format.logs))</span><br></pre></td></tr></table></figure>
+
+<h6 id="在-Trace-开始之前设置采样优先级"><a href="#在-Trace-开始之前设置采样优先级" class="headerlink" title="在 Trace 开始之前设置采样优先级"></a>在 Trace 开始之前设置采样优先级</h6><p>大多数分布式追踪系统都采用采样（ sampling ）来减少需要记录和处理的追踪数据量。有时，开发人员希望有一种方法确保 trace 系统能够 trace 到特定的消息，例如 HTTP 包含 debug=true 的请求。 OpenTracing API 对一些常用的标签进行了标准化，『采样优先级』就是其中之一，确切的语义是实现定义的，但是任何大于 0 （ 0 是默认值）的值都表示事件的优先级很高。为了将此属性传递给追踪系统，可以采取以下方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">if request.get(&#39;debug&#39;):</span><br><span class="line">    span &#x3D; tracer.start_span(</span><br><span class="line">        operation_name&#x3D;operation,</span><br><span class="line">        tags&#x3D;&#123;tags.SAMPLING_PRIORITY : 1&#125;)</span><br></pre></td></tr></table></figure>
+
+<h6 id="追踪消息总线（-Message-Bus-）"><a href="#追踪消息总线（-Message-Bus-）" class="headerlink" title="追踪消息总线（ Message Bus ）"></a>追踪消息总线（ Message Bus ）</h6><p>有两种风格的消息总线需要处理：消息队列和发布订阅。</p>
+<p>从追踪的角度来看，消息总线的样式并不重要，追踪系统只是将与生产者关联的 Span 嵌入到请求中，传递给消费者，仅此而已。消费者接收到消息，创建一个 Span 处理信息，并且建立一个指向传播 context 的 FollowsFrom 关系。</p>
+<p>与 RPC 客户端实例一样，消息传递生产者应该在发送消息之前创建好 Span ，并且与该消息一起传播 SpanContext 。将该消息 enqueue 或者 publish 到消息总线上之后，生产者 finish 这个 Span 。下例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">def traced_send(message, operation):</span><br><span class="line">    parent_span &#x3D; get_current_span()</span><br><span class="line"></span><br><span class="line">    span &#x3D; tracer.start_span(</span><br><span class="line">        operation_name&#x3D;operation,</span><br><span class="line">        child_of&#x3D;parent_span.context,</span><br><span class="line">        tags&#x3D;&#123;&#39;message.destination&#39;: message.destination&#125;)</span><br><span class="line"></span><br><span class="line">    tracer.inject(</span><br><span class="line">        span.context,</span><br><span class="line">        format&#x3D;opentracing.TEXT_MAP_FORMAT,</span><br><span class="line">        carrier&#x3D;message.headers)</span><br><span class="line"></span><br><span class="line">    with span:</span><br><span class="line">        messaging_client.send(message)</span><br><span class="line">    except Exception e:</span><br><span class="line">        ...</span><br><span class="line">        raise</span><br></pre></td></tr></table></figure>
+
+<p>以下是消费者的处理：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">extracted_context &#x3D; tracer.extract(</span><br><span class="line">    format&#x3D;opentracing.TEXT_MAP_FORMAT,</span><br><span class="line">    carrier&#x3D;message.headers)</span><br><span class="line"># start_span 函数可以指定 child_of ，也可以指定 references</span><br><span class="line">span &#x3D; tracer.start_span(</span><br><span class="line">    operation_name&#x3D;operation,</span><br><span class="line">    references&#x3D;follows_from(extracted_context))</span><br><span class="line">span.set_tag(&#39;message.destination&#39;, message.destination)</span><br></pre></td></tr></table></figure>
+
+<p>注意，这里要用 FollowsFrom 关系，而不是 ChildOf 关系，因为消息队列和发布订阅都是异步的，生产者的 Span 在把消息放在中间件之后，直接就 finish 掉了，并没有阻塞。即——这两个 Span 并不是调用与被调用的关系。</p>
+<h6 id="队列的同步请求-响应"><a href="#队列的同步请求-响应" class="headerlink" title="队列的同步请求 / 响应"></a>队列的同步请求 / 响应</h6><p>某些消息传递平台（例如 JMS ）支持在消息的 header 中提供 ReplyTo 目的地的功能，消费者收到消息后，将结果消息返回到指定的目的地。</p>
+<p>此模式可以被用于同步的请求和响应（ ReplyTo 设定为发消息的那个人）。此时，关系类型应该是 ChildOf ，而不是 FollowsFrom 。</p>
+<p>但是，此模式也可以用于委派——把消息告诉第三方（ ReplyTo 设定为除了发消息的那个人之外的其他人），这种情况下，就没有 ChildOf 关系了，仍然是 FollowsFrom 。</p>
+<p>由于两种模式难以区分，因此不建议使用同步的请求 / 响应的方式。建议从『对分布式追踪友好』的角度，放弃这个方案。</p>
+<h3 id="探测框架"><a href="#探测框架" class="headerlink" title="探测框架"></a>探测框架</h3><h5 id="受众"><a href="#受众" class="headerlink" title="受众"></a>受众</h5><p>本指南的读者是对将 OpenTracing 探测工具添加到 Web 框架、 RPC 框架、或者其他框架的『框架开发者』。通过使用该探测框架，『业务开发者』可以轻松地进行端到端的追踪。</p>
+<p>当某个请求在整个系统中传播时，分布式追踪可以提供有关于此请求的信息。 OpenTracing 是用于追踪从 Web 、移动客户端平台，到存储系统、应用程序、自定义后端的，跨进程的、流程一致的开源的标准 API 。将 OpenTracing 集成到整个应用程序之后，就可以轻松地在整个分布式系统中追踪请求。这满足了开发者和运营商可视化 profile 和保证产品稳定性的需求。</p>
+<h5 id="概览"><a href="#概览" class="headerlink" title="概览"></a>概览</h5><p>在较高的层次上，以下是 OpenTracing 集成到框架中所需要的条件：</p>
+<p>服务器框架的要求：</p>
+<ul>
+<li>筛选器、拦截器、中间件、或者其他处理入站请求的方法</li>
+<li>Active Span 存储：请求 context 或者 { 请求 : span } 的映射</li>
+<li>配置 tracer 的设置选项</li>
+</ul>
+<p>客户端框架的要求：</p>
+<ul>
+<li>过滤器、拦截器、或者其他处理出站请求的方法</li>
+<li>配置 tracer 的设置选项</li>
+</ul>
+<h5 id="专家提示"><a href="#专家提示" class="headerlink" title="专家提示"></a>专家提示</h5><p>在我们深入实现之前，还有一些重要的概念和功能提供给框架开发者。</p>
+<h5 id="操作名称"><a href="#操作名称" class="headerlink" title="操作名称"></a>操作名称</h5><p>您会注意到本教程有一个 <code>operation_name</code> 变量，每个 Span 的创建时指定的 <code>operation_name</code> 都应该遵循此处的规则。您应该为每一个 Span 都设置一个默认的操作名称，但也应该为框架用户提供一种自定义操作名称的方法。</p>
+<p>默认的操作名称例子：</p>
+<ul>
+<li>处理程序函数的名称</li>
+<li>网络资源的名称</li>
+<li>RPC 服务名称和方法名称的拼接串联</li>
+</ul>
+<h5 id="指定要跟踪的特定请求"><a href="#指定要跟踪的特定请求" class="headerlink" title="指定要跟踪的特定请求"></a>指定要跟踪的特定请求</h5><p>一些用户可能希望追踪每个请求，而另一些用户希望追踪特定的请求。理想情况下，您应该提供以上两种方案。例如，你可以提供 <code>@Trace</code> 修饰符，只有带上这个修饰符的函数才启动追踪。您还可以为用户提供一个配置，让用户指定追踪哪些模块，以及是否希望自动追踪。</p>
+<h5 id="追踪请求属性"><a href="#追踪请求属性" class="headerlink" title="追踪请求属性"></a>追踪请求属性</h5><p>用户可能希望追踪请求的其他业务信息，而不必手动拿到 Span 然后设置 tag 。所以，应当为用户提供一种方法，可以指定用户跟踪的属性，然后自动地跟踪这些属性，这有点类似于 gRPC 的 SpanDecorator 函数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">func SpanDecorator(decorator SpanDecoratorFunc) Option &#123;</span><br><span class="line">    return func(o *options) &#123;</span><br><span class="line">        o.decorator &#x3D; decorator</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>另一种方法是有一个配置 <code>TRACED_REQUEST_ATTRIBUTES</code> ，用户可以传递一个属性的列表（例如 URL, Method, Headers ），然后在追踪过滤器中包括一下内容：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">for attr in settings.TRACED_REQUEST_ATTRIBUTES:</span><br><span class="line">    if hasattr(request, attr):</span><br><span class="line">        payload &#x3D; str(getattr(request, attr))</span><br><span class="line">        span.set_tag(attr, payload)</span><br></pre></td></tr></table></figure>
+
+<h5 id="服务端追踪"><a href="#服务端追踪" class="headerlink" title="服务端追踪"></a>服务端追踪</h5><p>服务端追踪的目的是：追踪请求在服务器中的调用情况和生命周期，并将服务端的追踪状态与客户端的追踪状态相关联。您可以在服务器接收到请求时，创建一个 Span ，并在服务器完成对请求的处理时 finish 这个 Span 来做到这一点。追踪服务器的工作流程如下：</p>
+<ul>
+<li>服务器接收到请求<ul>
+<li>从请求中提取客户端传入的 trace 状态</li>
+<li>start 一个 Span ，与客户端传入的 trace 状态关联</li>
+<li>存储当前的 trace 状态</li>
+</ul>
+</li>
+<li>服务器完成请求处理<ul>
+<li>finish 这个 Span</li>
+</ul>
+</li>
+</ul>
+<p>由于此流程是在接收请求时发生的，因此您需要知道：如何更改框架的请求处理模块，来添加上述功能——无论是通过过滤器、中间件，以及等等其他方法。</p>
+<h5 id="提取当前追踪状态"><a href="#提取当前追踪状态" class="headerlink" title="提取当前追踪状态"></a>提取当前追踪状态</h5><p>为了跨进程的分布式追踪，服务器需要能够继续由发送方注入的 Trace 。 OpenTracing 通过 Extract 方法来实现此目标。如果客户端有一个已经 trace 的请求，则说明 SpanContext 已经注入到请求中，您的工作是用 io.opentracing.Tracer.extract 方法提取 SpanContext ， Carrier 取决于您使用的服务类型，例如 HTTP 服务，则可以使用 HTTP Headers 作为 Carrier 。</p>
+<p>Python ：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">span_ctx = tracer.extract(opentracing.Format.HTTP_HEADERS, request.headers)</span><br></pre></td></tr></table></figure>
+
+<p>Java ：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> io.opentracing.propagation.Format;</span><br><span class="line"><span class="keyword">import</span> io.opentracing.propagation.TextMap;</span><br><span class="line"></span><br><span class="line">Map&lt;String, String&gt; headers = request.getHeaders();</span><br><span class="line">SpanContext parentSpan = tracer.getTracer().extract(Format.Builtin.HTTP_HEADERS,</span><br><span class="line">    <span class="keyword">new</span> TextMapExtractAdapter(headers));</span><br></pre></td></tr></table></figure>
+
+<p>由于没有 Span 而导致 Extract 方法失败时， OpenTracing 会引发一个错误，因此请确保捕获到异常。这通常意味着：请求来自于第三方（未使用 Trace 服务）客户端。此时，服务器应该新建一个 trace 。</p>
+<h5 id="start-一个-Span"><a href="#start-一个-Span" class="headerlink" title="start 一个 Span"></a>start 一个 Span</h5><p>收到请求并且提取 SpanContext 之后，应该立刻启动一个 Span ，这个 Span 代表服务端处理请求的生命周期。如果存在客户端携带的 SpanContext ，应该在 start Span 的时候设置 ChildOf ，指向客户端携带的 SpanContext ，表示客户端和服务端之间的调用关系。如果没有携带的 SpanContext ，那么服务端应该 start 一个没有指向的新 Span （此时会创建一个新的 trace ）。</p>
+<p>Python ：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> extracted_span_ctx:</span><br><span class="line">    span = tracer.start_span(operation_name=operation_name,</span><br><span class="line">        child_of=extracted_span_ctx)</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    span = tracer.start_span(operation_name=operation_name)</span><br></pre></td></tr></table></figure>
+
+<p>Java ：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (parentSpan == <span class="keyword">null</span>)&#123;</span><br><span class="line">    span = tracer.buildSpan(operationName).start();</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    span = tracer.buildSpan(operationName).asChildOf(parentSpan).start();</span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure>
+
+<h5 id="存储当前的-SpanContext"><a href="#存储当前的-SpanContext" class="headerlink" title="存储当前的 SpanContext"></a>存储当前的 SpanContext</h5><p>用户必须能够在处理请求时，访问当前的 SpanContext ，以便在 Span 上设置自定义的 tag 、记录事件，等等需求。为了做到这一点，您必须决定如何使得 Span 可供用户使用，以下是两个常见的例子：</p>
+<ol>
+<li>请求 context ：如果您的框架有一个可以存储任意值的请求 context ，那么可以将 SpanContext 存储在这里。如果您的框架有可以更改请求处理方式的过滤器，这也是可以的。例如，如果您有一个称为 ctx 的 context ，可以使用以下过滤器：</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">def filter(request):</span><br><span class="line">    span &#x3D; ...</span><br><span class="line">    with (ctx.active_span &#x3D; span):</span><br><span class="line">        process_request(request)</span><br><span class="line">    span.finish()</span><br></pre></td></tr></table></figure>
+
+<p>现在，处理任何请求的时候，如果用户访问 <code>ctx.active_span</code> ，它们将拿到该请求的 Span 。</p>
+<ol start="2">
+<li>您可能没有可用的请求 context ，那么可以改为创建一个 map ，存储 { 请求 : span } 的映射。例如：</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">class MyFrameworkTracer:</span><br><span class="line">    def __init__(opentracing_tracer):</span><br><span class="line">        self.internal_tracer &#x3D; opentracing_tracer</span><br><span class="line">        self.active_spans &#x3D; &#123;&#125;</span><br><span class="line"></span><br><span class="line">    def add_span(request, span):</span><br><span class="line">        self.active_spans[request] &#x3D; span</span><br><span class="line"></span><br><span class="line">    def get_span(request):</span><br><span class="line">        return self.active_spans[request]</span><br><span class="line"></span><br><span class="line">    def finish_span(request):</span><br><span class="line">        span &#x3D; self.active_spans[request]</span><br><span class="line">        span.finish()</span><br><span class="line">        del self.active_spans[request]</span><br></pre></td></tr></table></figure>
+
+<p>如果您的服务器可以一次处理多个请求，请确保这个 map 是线程安全的。</p>
+<p>然后，可以使用如下过滤器：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">def process_request(request):</span><br><span class="line">    span &#x3D; ...</span><br><span class="line">    tracer.add_span(request, span)</span><br><span class="line"></span><br><span class="line">def process_response(request, response):</span><br><span class="line">    tracer.finish_span(request)</span><br></pre></td></tr></table></figure>
+
+<h5 id="客户端追踪"><a href="#客户端追踪" class="headerlink" title="客户端追踪"></a>客户端追踪</h5><p>客户端追踪适用于能够发起请求的客户端框架，可以把 Span 注入到请求的 header 中，然后传递给服务端。与服务端一样，您需要了解如何更改客户端发送和接收请求的方式。</p>
+<p>客户端工作流程：</p>
+<ul>
+<li>准备请求<ul>
+<li>加载当前追踪状态</li>
+<li>start 一个新的 Span</li>
+<li>将 Span 注入到请求中</li>
+</ul>
+</li>
+<li>发送请求<ul>
+<li>收到回应</li>
+<li>finish 这个 Span</li>
+</ul>
+</li>
+</ul>
+<h5 id="加载当前追踪状态-start-一个-Span"><a href="#加载当前追踪状态-start-一个-Span" class="headerlink" title="加载当前追踪状态 / start 一个 Span"></a>加载当前追踪状态 / start 一个 Span</h5><p>就像服务端一样，我们必须识别是要启动新的 trace ，还是需要和正在 active 的 Span 建立关联。大部分微服务在一个分布式系统中，既当客户端，也当服务端。并且，由模块 A 接收模块发来的 M 请求 q ，做了一定的处理变成了 q’ ，再把 q’ 发给 N ，我们有理由认为， q 和 q’ 是相关联的。所以，如果存在一个 active Span ，应当以其作为 parent Span ，而不是重新开始一个 trace 。</p>
+<p>如果使用请求 context ，像如下这样：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">if hasattr(ctx, active_span):</span><br><span class="line">    parent_span &#x3D; getattr(ctx, active_span)</span><br><span class="line">    span &#x3D; tracer.start_span(operation_name&#x3D;operation_name,</span><br><span class="line">        child_of&#x3D;parent_span)</span><br><span class="line">else:</span><br><span class="line">    span &#x3D; tracer.start_span(operation_name&#x3D;operation_name)</span><br></pre></td></tr></table></figure>
+
+<p>如果使用 { 请求 : span } 的映射，像如下这样：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">parent_span &#x3D; tracer.get_span(request)</span><br><span class="line">span &#x3D; tracer.start_span(</span><br><span class="line">    operation_name&#x3D;operation_name,</span><br><span class="line">    child_of&#x3D;parent_span)</span><br></pre></td></tr></table></figure>
+
+<h5 id="Inject-Span"><a href="#Inject-Span" class="headerlink" title="Inject Span"></a>Inject Span</h5><p>客户端需要把追踪信息注入到即将要发送的请求中，如果使用 HTTP ，则可以使用 HTTP Header 作为 Carrier ：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">span &#x3D; ...</span><br><span class="line">tracer.inject(span, opentracing.Format.HTTP_HEADERS, request.headers)</span><br></pre></td></tr></table></figure>
+
+<h5 id="finish-Span"><a href="#finish-Span" class="headerlink" title="finish Span"></a>finish Span</h5><p>收到响应后，需要 finish 这个 Span ，表示客户端请求已经完成。可以直接在过滤器中接收请求：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">def filter(request, response):</span><br><span class="line">    span &#x3D; ...</span><br><span class="line">    tracer.inject(span, opentracing.Format.HTTP_HEADERS, request.headers)</span><br><span class="line">    response &#x3D; send_request(request)</span><br><span class="line">    if response.error:</span><br><span class="line">       span.set_tag(opentracing.ERROR, true)</span><br><span class="line">    span.finish()</span><br></pre></td></tr></table></figure>
+
+<p>或者，如果要是有其他方法处理请求和响应，也可以用一个映射记录 { 请求 : span } ，分开处理：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">def process_request(request):</span><br><span class="line">    span &#x3D; ...</span><br><span class="line">    tracer.inject(span. opentracing.Format.HTTP_HEADERS, request.headers)</span><br><span class="line">    tracer.add_client_span(request, span)</span><br><span class="line">def process_response(request, response):</span><br><span class="line">    tracer.finish_client_span(request)</span><br></pre></td></tr></table></figure>
+
+<h3 id="探测应用程序"><a href="#探测应用程序" class="headerlink" title="探测应用程序"></a>探测应用程序</h3><h5 id="Span-和关系"><a href="#Span-和关系" class="headerlink" title="Span 和关系"></a>Span 和关系</h5><p>在整个基础架构中，实现 OpenTracing 的两个基本元素就是 Span 以及 Span 之间的关系：</p>
+<p>Span 是分布式系统中的逻辑工作单元，根据定义， Span 具有一个名字，以及开始时间和结束时间。在分布式追踪中， Span 与生成它们的分布式组件相关联。</p>
+<p><img src="https://iyea.github.io/images/7.png"></p>
+<p>关系是 Span 之间的联系，一个 Span 可以引用零个或者多个因果相关的其他 Span 。 Span 的联系有助于描述正在运行的分布式系统的语义，以及对延迟敏感的关键路径。</p>
+<p><img src="https://iyea.github.io/images/8.png"></p>
+<p>每一个请求的分布式追踪的最终产出是：组件或者您参与的组件发出的 Span 以及这些 Span 之间的关系。当通过分布式追踪系统构建基础架构时，最佳实践是通过 RPC 层或者其他的已知的、存在于多个执行路径的、与每个模块紧密连接的基础组件。</p>
+<p>通过使用已经满足 OpenTracing 标准的组件（例如 gRPC ），可以抢先一步体验 OpenTracing 。</p>
+<h5 id="专注于价值领域"><a href="#专注于价值领域" class="headerlink" title="专注于价值领域"></a>专注于价值领域</h5><p>如上所述，从 RPC 或者 Web 层开始，为您的探测工具提供良好的追踪基础，两者都有较大的覆盖范围和大量的连接路径。</p>
+<p>接下来，您应该在服务框架未涵盖的路径上，查找相关的、可以集成 OpenTracing 的基础架构，对足够多的这样的路径进行检测，以『价值最高』的关键路径为高优先级，加入追踪系统。</p>
+<h5 id="爬行，步行，跑步"><a href="#爬行，步行，跑步" class="headerlink" title="爬行，步行，跑步"></a>爬行，步行，跑步</h5><p>在整个系统上实现分布式追踪时，构建价值的关键是在『完成那些高价值的跟踪路径』和『总覆盖率』之间的权衡，两者都非常重要。</p>
+<p>一旦有了端到端的追踪，就可以评估并确定优先级。与其加入其他路径而言，提高可视性值得您付出更大的精力。当您开始深入研究时，请寻找可以重复使用的工作单元，例如多个模块使用的库，这种方法会带来广泛的侦查范围，也会为关键业务增加高价值 Span 。</p>
+<h5 id="概念上的实例"><a href="#概念上的实例" class="headerlink" title="概念上的实例"></a>概念上的实例</h5><p>上述的概念太抽象，我们举个例子，体会应该如何给应用程序增加 OpenTracing 支持。</p>
+<p>假设，我们需要追踪由移动客户端发起并通过几个后端服务传播的请求。</p>
+<p>首先，我们必须确定整体的工作流程，如下所示：</p>
+<p><img src="https://iyea.github.io/images/9.png"></p>
+<p>现在，我们对基本的工作流程有了理解，我们可以寻找一些比较广泛的协议和框架，最好的选择是从 RPC 框架开始，因为这是收集 Span 最简单的方法，该 Span 用于收集通过 PRC 框架发送的所有请求。</p>
+<p>意义重大的下一个组件是 Web 框架。通过添加 Web 框架，我们可以进行端到端的追踪，这可能很粗糙，但至少我们的追踪系统可以捕获整个工作流程。</p>
+<p><img src="https://iyea.github.io/images/10.png"></p>
+<p>现在，我们看一下踪迹，并且评估我们将在哪些方面下手，可以获取最大的价值。在我们的示例中，我们可以看到请求延迟最大的区域是分配资源事件，因此，我们为分配过程添加更为详细的可见性探测。对资源 API 进行研究后，我们可以发现资源请求可以细分为：</p>
+<p><img src="https://iyea.github.io/images/11.png"></p>
+<p>一旦我们对资源分配的各个细分流程进行检测，就可以看到大部分时间消耗在了资源供应上，下一步将是更深入，比如看看有哪些流程可以进行优化：或许我们可以并行，而不是串行的配置资源：</p>
+<p><img src="https://iyea.github.io/images/12.png"></p>
+<p>现在，已经有了端到端工作流程的可见性和性能的 baseline ，我们就可以创建一个 SLO （ SLA ）模块，实时监控性能。</p>
+<p>下一个迭代，我们将返回系统顶层，寻找其他似乎缺乏可见性（ trace 粒度过大）的路径，在这些路径上使用更加精确的 trace ；如果可见性足够，那么可以扩展其他链路。</p>
+
+      </div>
+      
+    </div>
+    
+
+    
+      <div class="comments-container">
+        
+
+
+
+
+
+      </div>
+    
+  </div>
+
+
+      </div>
+
+      <div class="back-to-top hidden">
+  <a href="javascript: void(0)">
+    <i class="iconfont icon-chevronup"></i>
+  </a>
+</div>
+
+
+<script src="/js/backtotop.js"></script>
+
+
+
+      
+
+
+    </div>
+  </body>
+</html>
