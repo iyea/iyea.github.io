@@ -6,7 +6,7 @@
   <link href="https://iyea.github.io/atom.xml" rel="self"/>
   
   <link href="https://iyea.github.io/"/>
-  <updated>2020-12-28T17:32:38.310Z</updated>
+  <updated>2021-01-06T15:29:33.303Z</updated>
   <id>https://iyea.github.io/</id>
   
   <author>
@@ -17,11 +17,34 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>OpenTracing 翻译： Overview</title>
+    <link href="https://iyea.github.io/2021/01/06/OpenTracing-%E7%BF%BB%E8%AF%91%EF%BC%9A-Overview/"/>
+    <id>https://iyea.github.io/2021/01/06/OpenTracing-%E7%BF%BB%E8%AF%91%EF%BC%9A-Overview/</id>
+    <published>2021-01-06T15:19:27.000Z</published>
+    <updated>2021-01-06T15:29:33.303Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h3 id=&quot;OpenTracing-概览&quot;&gt;&lt;a href=&quot;#OpenTracing-概览&quot; class=&quot;headerlink&quot; title=&quot;OpenTracing 概览&quot;&gt;&lt;/a&gt;OpenTracing 概览&lt;/h3&gt;&lt;h5 id=&quot;介绍&quot;&gt;&lt;a</summary>
+        
+      
+    
+    
+    
+    
+    <category term="计算机" scheme="https://iyea.github.io/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA/"/>
+    
+  </entry>
+  
+  <entry>
     <title>逍遥游</title>
     <link href="https://iyea.github.io/2020/12/28/%E9%80%8D%E9%81%A5%E6%B8%B8/"/>
     <id>https://iyea.github.io/2020/12/28/%E9%80%8D%E9%81%A5%E6%B8%B8/</id>
     <published>2020-12-28T15:10:19.000Z</published>
-    <updated>2020-12-28T17:32:38.310Z</updated>
+    <updated>2021-01-06T15:17:54.853Z</updated>
     
     
       
