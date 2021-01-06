@@ -124,7 +124,7 @@
 <li>SpanContext ：服务上下游之间需要传递的 Trace 数据。 SpanContext 包含： Trace ID 、 Span ID 、以及任何其他的追踪系统或者业务逻辑需要传播到下游服务的数据；</li>
 </ol>
 <p><img src="https://iyea.github.io/images/2.png"></p>
-<h5 id="四大块"><a href="#四大块" class="headerlink" title="四大块"></a>四大块</h5><p>从应用程序层面的分布式追踪系统角度来看，现代软件系统如图所示：</p>
+<h5 id="四大块"><a href="#四大块" class="headerlink" title="四大块"></a>四大块</h5><p>现代软件系统如图所示：</p>
 <p><img src="https://iyea.github.io/images/3.png"></p>
 <p>现代软件系统的组件可以被分成 3 类：</p>
 <ol>
@@ -134,7 +134,7 @@
 </ol>
 <p>这 3 个组件有不同的要求，并且影响着分布式追踪系统的设计。最终的设计有 4 个重要方面：</p>
 <ol>
-<li>追踪工具的 API ：装饰程序（ decorate ）的代码，例如 @trace ；</li>
+<li>追踪工具的 API ：装饰程序（ decorate ），例如 @trace ；</li>
 <li>网络传播协议：在 RPC 请求中，需要和应用程序数据一起发送的内容；</li>
 <li>数据协议：异步地发送到分析系统的内容；</li>
 <li>分析系统：用于处理跟踪数据的数据库和交互式 UI ；</li>
@@ -166,13 +166,13 @@
 <li>k : v 格式的 Span logs 的集合</li>
 <li>SpanContext</li>
 </ul>
-<h5 id="Tags"><a href="#Tags" class="headerlink" title="Tags"></a>Tags</h5><p>Tags 是 k : v 格式的、允许用户自定义的、对于一个 Span 的标注，可以方面用户查询、过滤、理解追踪数据。在 semantic_conventions.md 中，列出了常见场景的、常规的 Span tags 。一个例子是：</p>
+<h5 id="Tags"><a href="#Tags" class="headerlink" title="Tags"></a>Tags</h5><p>Tags 是 k : v 格式的、允许用户自定义的、对于一个 Span 的标注，可以方便用户查询、过滤、理解追踪数据。在 semantic_conventions.md 中，列出了常见场景的、常规的 Span tags 。一个例子是：</p>
 <ul>
 <li>Tag key 是 db.instance ，表示用于标识一个数据库主机；</li>
 <li>Tag key 是 http.status_code ，表示 HTTP 请求的响应码；</li>
 <li>Tag key 是 error ，表示一个操作是否成功；</li>
 </ul>
-<h5 id="Logs"><a href="#Logs" class="headerlink" title="Logs"></a>Logs</h5><p>Logs 是 k : v 格式的，用于记录在当前 Span 中发生的特定事件的 log 信息</p>
+<h5 id="Logs"><a href="#Logs" class="headerlink" title="Logs"></a>Logs</h5><p>Logs 是 k : v 格式的，用于记录在当前 Span 中发生的特定事件的 log 信息。</p>
 <h5 id="SpanContext"><a href="#SpanContext" class="headerlink" title="SpanContext"></a>SpanContext</h5><p>SpanContext 携带了跨进程通信的数据。具体来说，它有两个部分：</p>
 <ul>
 <li>依赖于具体实现的、在一个 Trace 中的某一个 Span 的唯一标识，例如， spanID 和 traceID 。</li>
@@ -201,7 +201,7 @@
 <li>Tag key 是 http.status_code ，表示 HTTP 请求的响应码；</li>
 <li>Tag key 是 error ，表示一个操作是否成功；</li>
 </ul>
-<h5 id="Logs-1"><a href="#Logs-1" class="headerlink" title="Logs"></a>Logs</h5><p>Logs 是 k : v 格式的，用于记录在当前 Span 中发生的特定事件的 log 信息</p>
+<h5 id="Logs-1"><a href="#Logs-1" class="headerlink" title="Logs"></a>Logs</h5><p>Logs 是 k : v 格式的，用于记录在当前 Span 中发生的特定事件的 log 信息。</p>
 <h5 id="Baggage-Items"><a href="#Baggage-Items" class="headerlink" title="Baggage Items"></a>Baggage Items</h5><p>SpanContext 携带了跨进程通信的数据。具体来说，它有两个部分：</p>
 <ul>
 <li>依赖于具体实现的、在一个 Trace 中的某一个 Span 的唯一标识，例如， spanID 和 traceID 。</li>
@@ -250,7 +250,7 @@
 <h5 id="基本方法：-Inject-、-Extract"><a href="#基本方法：-Inject-、-Extract" class="headerlink" title="基本方法： Inject 、 Extract"></a>基本方法： Inject 、 Extract</h5><p>一个 trace 中的任何 SpanContext 可以被注入到 OpenTracing 称之为 Carrier 的地方。 Carrier 是一种接口或者数据结构，可以用于进程之间的通信，也就是说， Carrier 是将追踪的状态从一个进程带到另一个进程的东西。 OpenTracing 包括了两种必须的 Carriers 格式，用户也可以自定义 Carriers 格式。 </p>
 <p>类似地，给定一个 Carrier ，一个被注入的 trace 可以通过 Extracted 方法生成一个 SpanContext 实例，该实例在语义上，与（之前）被注入到 Carrier 中的 SpanContext 相同。</p>
 <p>Inject 伪代码：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">span_context &#x3D; ...</span><br><span class="line">outbound_request &#x3D; ...</span><br><span class="line"></span><br><span class="line"># 我们使用 buildin 的 HTTP_HEADERS carrier 格式</span><br><span class="line"># 在调用 Inject 之前，创建出来一个空的 map 作为 carrier</span><br><span class="line">carrier &#x3D; &#123;&#125;</span><br><span class="line">tracer.Inject(span_context, opentracing.Format.HTTP_HEADERS, carrier)</span><br><span class="line"></span><br><span class="line"># 现在， carrier 包含 k:v pairs ，我们可以使用任何的协议传输它们</span><br><span class="line">for km v in carrier:</span><br><span class="line">    outbound_requerst.headers[k] &#x3D; escape(v)</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">span_context &#x3D; ...</span><br><span class="line">outbound_request &#x3D; ...</span><br><span class="line"></span><br><span class="line"># 我们使用 buildin 的 HTTP_HEADERS carrier 格式</span><br><span class="line"># 在调用 Inject 之前，创建出来一个空的 map 作为 carrier</span><br><span class="line">carrier &#x3D; &#123;&#125;</span><br><span class="line">tracer.Inject(span_context, opentracing.Format.HTTP_HEADERS, carrier)</span><br><span class="line"></span><br><span class="line"># 现在， carrier 包含 k:v pairs ，我们可以使用任何的协议传输它们</span><br><span class="line">for k, v in carrier:</span><br><span class="line">    outbound_requerst.headers[k] &#x3D; escape(v)</span><br></pre></td></tr></table></figure>
 
 <p>Extract 伪代码：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">inbound_request &#x3D; ...</span><br><span class="line"></span><br><span class="line"># 我们仍然使用 buildin 的 HTTP_HEADERS carrier 格式</span><br><span class="line"># 我们可以使用包含无关数据的 k:v pairs ， OpenTracing 的实现会从中查找所需的字段</span><br><span class="line"># 因此， inbound_request.headers 可以直接作为 carrier</span><br><span class="line">carrier &#x3D; inbound_request.headers</span><br><span class="line">span_context &#x3D; tracer.extract(opentracing.Format.HTTP_HEADERS, carrier)</span><br><span class="line"></span><br><span class="line"># 继续这个 trace</span><br><span class="line">span &#x3D; tracer.start_span(&quot;...&quot;, child_of&#x3D;span_context)</span><br></pre></td></tr></table></figure>
