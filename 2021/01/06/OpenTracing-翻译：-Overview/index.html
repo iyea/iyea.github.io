@@ -102,6 +102,17 @@
           2021-01-06
         </span>
         
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="Categories"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA/" title="计算机">
+                    <b>#</b> 计算机
+                  </a>
+                </span>
+                
+              </span>
+          
       </div>
       <div class="markdown-body">
         <h3 id="OpenTracing-概览"><a href="#OpenTracing-概览" class="headerlink" title="OpenTracing 概览"></a>OpenTracing 概览</h3><h5 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h5><p>微服务提供了强大的体系结构，但是仍然存在其他挑战，特别是调试和观察复杂网络中的分布式事务——简单的原因是没有调用栈。</p>
@@ -267,41 +278,8 @@
 
       </div>
       
-        <div class="prev-or-next">
-          <div class="post-foot-next">
-            
-              <a href="/2020/12/28/%E9%80%8D%E9%81%A5%E6%B8%B8/" target="_self">
-                <i class="iconfont icon-chevronleft"></i>
-                <span>Prev</span>
-              </a>
-            
-          </div>
-          <div class="post-attach">
-            <span class="post-pubtime">
-              <i class="iconfont icon-updatetime" title="Update time"></i>
-              2021-01-06
-            </span>
-            
-          </div>
-          <div class="post-foot-prev">
-            
-          </div>
-        </div>
-      
     </div>
     
-  <div class="post-catalog" id="catalog">
-    <div class="title">Contents</div>
-    <div class="catalog-content">
-      <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#OpenTracing-%E6%A6%82%E8%A7%88"><span class="toc-text">OpenTracing 概览</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%BB%8B%E7%BB%8D"><span class="toc-text">介绍</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%88%86%E5%B8%83%E5%BC%8F%E8%BF%BD%E8%B8%AA%EF%BC%9A%E4%B8%80%E7%A7%8D%E5%BF%83%E6%99%BA%E6%A8%A1%E5%9E%8B%EF%BC%88-Mental-Model-%EF%BC%89"><span class="toc-text">分布式追踪：一种心智模型（ Mental Model ）</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%9B%9B%E5%A4%A7%E5%9D%97"><span class="toc-text">四大块</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#OpenTracing-%E6%98%AF%E5%A6%82%E4%BD%95%E5%81%9A%E7%9A%84%EF%BC%9F"><span class="toc-text">OpenTracing 是如何做的？</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E5%88%86%E5%B8%83%E5%BC%8F%E8%BF%BD%E8%B8%AA%EF%BC%9F"><span class="toc-text">什么是分布式追踪？</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E8%B0%81%E4%BD%BF%E7%94%A8%E5%88%86%E5%B8%83%E5%BC%8F%E8%BF%BD%E8%B8%AA%EF%BC%9F"><span class="toc-text">谁使用分布式追踪？</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF-OpenTracing-%EF%BC%9F"><span class="toc-text">什么是 OpenTracing ？</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%A6%82%E5%BF%B5%E5%92%8C%E6%9C%AF%E8%AF%AD"><span class="toc-text">概念和术语</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Spans"><span class="toc-text">Spans</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF-Span-%EF%BC%9F"><span class="toc-text">什么是 Span ？</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Tags"><span class="toc-text">Tags</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Logs"><span class="toc-text">Logs</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#SpanContext"><span class="toc-text">SpanContext</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Scopes-%E5%92%8C-Threading"><span class="toc-text">Scopes 和 Threading</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%BB%8B%E7%BB%8D-1"><span class="toc-text">介绍</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E8%AE%BF%E9%97%AE%E5%BD%93%E5%89%8D%E7%9A%84-Active-Span"><span class="toc-text">访问当前的 Active Span</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E8%B7%A8%E7%BA%BF%E7%A8%8B%E7%A7%BB%E5%8A%A8-Span"><span class="toc-text">跨线程移动 Span</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Tags-%E3%80%81-logs-%E5%92%8C-Baggage-Items"><span class="toc-text">Tags 、 logs 和 Baggage Items</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#Tags-1"><span class="toc-text">Tags</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Logs-1"><span class="toc-text">Logs</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Baggage-Items"><span class="toc-text">Baggage Items</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Tracers"><span class="toc-text">Tracers</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%BB%8B%E7%BB%8D-2"><span class="toc-text">介绍</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Tracer-%E6%8E%A5%E5%8F%A3"><span class="toc-text">Tracer 接口</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E8%AE%BE%E7%BD%AE-Tracer"><span class="toc-text">设置 Tracer</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%BC%80%E5%A7%8B%E4%B8%80%E4%B8%AA%E6%96%B0%E7%9A%84-Trace"><span class="toc-text">开始一个新的 Trace</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E8%AE%BF%E9%97%AE-Active-Span"><span class="toc-text">访问 Active Span</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E9%80%9A%E8%BF%87-Inject-%E5%92%8C-Extract-%E6%9D%A5%E4%BC%A0%E6%92%AD-Trace"><span class="toc-text">通过 Inject 和 Extract 来传播 Trace</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Inject-%E5%92%8C-Extract"><span class="toc-text">Inject 和 Extract</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%98%BE%E5%BC%8F-trace-%E4%BC%A0%E6%92%AD%E7%9A%84%E3%80%8E%E5%A4%A7%E5%9B%BE%E6%99%AF%E3%80%8F"><span class="toc-text">显式 trace 传播的『大图景』</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#OpenTracing-%E4%BC%A0%E6%92%AD%E6%96%B9%E6%A1%88%E7%9A%84%E9%9C%80%E6%B1%82"><span class="toc-text">OpenTracing 传播方案的需求</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E6%96%B9%E6%B3%95%EF%BC%9A-Inject-%E3%80%81-Extract"><span class="toc-text">基本方法： Inject 、 Extract</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Carriers-%E6%A0%BC%E5%BC%8F"><span class="toc-text">Carriers 格式</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#OpenTracing-%E8%B7%A8%E8%BF%9B%E7%A8%8B%E7%9A%84%E4%BA%92%E9%80%9A%E6%80%A7"><span class="toc-text">OpenTracing 跨进程的互通性</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89-Inject-Extract-Carrier-%E6%A0%BC%E5%BC%8F"><span class="toc-text">自定义 Inject&#x2F;Extract Carrier 格式</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%9B%B4%E5%A4%9A%E5%85%B3%E4%BA%8E%E8%87%AA%E5%AE%9A%E4%B9%89-Carrier-%E6%A0%BC%E5%BC%8F%E7%9A%84%E5%86%85%E5%AE%B9"><span class="toc-text">更多关于自定义 Carrier 格式的内容</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%AB%AF%E5%88%B0%E7%AB%AF%E7%9A%84-Inject-Extract-%E4%BC%A0%E6%92%AD%E4%BE%8B%E5%AD%90"><span class="toc-text">端到端的 Inject&#x2F;Extract 传播例子</span></a></li></ol></li></ol></li></ol>
-    </div>
-  </div>
-
-  
-<script src="/js/catalog.js"></script>
-
-
-
 
     
       <div class="comments-container">
