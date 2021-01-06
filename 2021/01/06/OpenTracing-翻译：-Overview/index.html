@@ -216,7 +216,7 @@
 <p>OpenTracing 消除了不同的 tracer 之间的差异。这意味着无论开发者使用的 tracer 系统是什么，接口都将保持不变。为了使用 OpenTracing 规范对程序进行检测，必须部署兼容 OpenTracing 的 tracer 。</p>
 <h5 id="Tracer-接口"><a href="#Tracer-接口" class="headerlink" title="Tracer 接口"></a>Tracer 接口</h5><p>Tracer 接口创建 Span 并且理解如何去跨进程地注入（ Inject ，序列化）和 提取（ Extract ，反序列化） metadata 数据，它具有以下功能：</p>
 <ul>
-<li>开始一个新的 Span</li>
+<li>start 一个新的 Span</li>
 <li>注入（ Inject ） SpanContext 到一个载体（ carrier ）</li>
 <li>从一个载体（ carrier ）中提取（ Extract ） SpanContext</li>
 </ul>
