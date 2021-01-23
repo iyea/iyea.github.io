@@ -6,7 +6,7 @@
   <link href="https://iyea.github.io/atom.xml" rel="self"/>
   
   <link href="https://iyea.github.io/"/>
-  <updated>2021-01-06T15:52:02.197Z</updated>
+  <updated>2021-01-23T18:12:46.038Z</updated>
   <id>https://iyea.github.io/</id>
   
   <author>
@@ -15,6 +15,29 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>周易上卷简析</title>
+    <link href="https://iyea.github.io/2021/01/24/%E5%91%A8%E6%98%93%E4%B8%8A%E5%8D%B7%E7%AE%80%E6%9E%90/"/>
+    <id>https://iyea.github.io/2021/01/24/%E5%91%A8%E6%98%93%E4%B8%8A%E5%8D%B7%E7%AE%80%E6%9E%90/</id>
+    <published>2021-01-23T16:24:47.000Z</published>
+    <updated>2021-01-23T18:12:46.038Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h3 id=&quot;乾&quot;&gt;&lt;a href=&quot;#乾&quot; class=&quot;headerlink&quot; title=&quot;乾&quot;&gt;&lt;/a&gt;乾&lt;/h3&gt;&lt;h5 id=&quot;卦辞&quot;&gt;&lt;a href=&quot;#卦辞&quot; class=&quot;headerlink&quot;</summary>
+        
+      
+    
+    
+    
+    <category term="道" scheme="https://iyea.github.io/categories/%E9%81%93/"/>
+    
+    
+  </entry>
   
   <entry>
     <title>OpenTracing 翻译：语义规范</title>
